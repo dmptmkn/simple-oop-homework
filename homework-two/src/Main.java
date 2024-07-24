@@ -85,20 +85,15 @@ public class Main {
     public static int maxCharIndex(String string) {
         if (string == null || string.isBlank()) return -1;
 
-        Map<Character, Integer> charMap = new HashMap<>();
-        for (char c : string.toCharArray()) {
-            charMap.merge(c, 1, Integer::sum);
-        }
-        int max = charMap.values()
-                .stream()
-                .max(Comparator.naturalOrder())
-                .get();
-        char maxChar = charMap.entrySet().stream()
-                .filter(e -> e.getValue() == max)
-                .findFirst()
-                .map(Map.Entry::getKey)
-                .get();
+        Map<String, Integer> charMap = new HashMap<>();
+        string.chars()
+                .mapToObj(Character::toString)
+                .forEach(s -> charMap.merge(s, 1, Integer::sum));
 
-        return string.indexOf(maxChar);
+        return string.indexOf(charMap.entrySet().stream()
+                .filter(e -> e.getValue().equals(charMap.values().stream()
+                        .max(Comparator.naturalOrder())
+                        .orElseThrow()))
+                .findFirst().orElseThrow().getKey());
     }
 }
